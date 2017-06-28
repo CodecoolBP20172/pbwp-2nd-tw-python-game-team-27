@@ -1,14 +1,8 @@
 import sys
 import readchar
 import pygame
-import threading
-
-player_x=1
-player_y=1
-global_score=0
 
 
-enemy=[4,3]
 
 def load_map(filename):
     mi = []
@@ -34,21 +28,16 @@ def level(filename):
     return levels
 
 def main():
-    pause=False
-    move_right=True
     lvl=level("levels.txt")
     #print(high_score("hs.txt"))
     sys.stdout.write("\033c")
     l=0
-    i=player_x
-    j=player_y
+    i=1
+    j=1
     viewDistance=1
-    score=global_score
+    score=0
     #position=[i,j]
-    enemy_move("lol")
-    mapindex = load_map(lvl[l])
     while l<=len(lvl)-1:
-       
         i = 1
         j = 1
         if l == len(lvl)-1:
@@ -59,7 +48,7 @@ def main():
                 high=high_score("hs.txt")
                 if int(score)<high[0]:
                     print("")
-                    print("NEW HiGH SCORE")
+                    print("NEW HIGH SCORE")
             while True:
                 re = readchar.readchar()
                 if re == "r":
@@ -67,132 +56,86 @@ def main():
                 else:
                     sys.exit()
         else:
-            
-            position = [i, j]
-            draw(mapindex, position, viewDistance, score, enemy)
+            mapIndex = load_map(lvl[l])
+            position=[i,j]
+            draw(mapIndex,position,viewDistance,score)
             while True:
-                ch = readchar.readchar()
-                
-
-                if ch == "s" or ch == "S":
-                    if mapindex[i + 1][j] == "O":
+                print("Enemy mozog")
+                ch=readchar.readchar()
+                if ch=="s" or ch=="S":
+                    if mapIndex[i + 1][j] == "O":
                         sys.stdout.write("\033c")
                         l = l + 1
-                        score = score + viewDistance
+                        score=score+viewDistance
                         break
-                    if mapindex[i + 1][j] == " ":
-                        position[0] = i + 1
-                        i = i + 1
-                        score = score + viewDistance
+                    if mapIndex[i+1][j]==" ":
+                        position[0]=i+1
+                        i=i+1
+                        score=score+viewDistance
                         sys.stdout.write("\033c")
-                        draw(mapindex, position, viewDistance, score, enemy)
-                elif ch == "w" or ch == "W":
-                    if mapindex[i - 1][j] == "O":
+                        draw(mapIndex,position,viewDistance,score)
+                elif ch=="w" or ch=="W":
+                    if mapIndex[i - 1][j] == "O":
                         sys.stdout.write("\033c")
                         l = l + 1
-                        score = score + viewDistance
+                        score=score+viewDistance
                         break
-                    if mapindex[i - 1][j] == " ":
-                        position[0] = i - 1
-                        i = i - 1
+                    if mapIndex[i-1][j]==" ":
+                        position[0]=i-1
+                        i=i-1
                         sys.stdout.write("\033c")
-                        score = score + viewDistance
-                        draw(mapindex, position, viewDistance, score, enemy)
-                elif ch == "a" or ch == "A":
-                    if mapindex[i][j - 1] == "O":
+                        score=score+viewDistance
+                        draw(mapIndex,position,viewDistance,score)
+                elif ch=="a" or ch=="A":
+                    if mapIndex[i][j - 1] == "O":
                         sys.stdout.write("\033c")
                         l = l + 1
-                        score = score + viewDistance
+                        score=score+viewDistance
                         break
-                    if mapindex[i][j - 1] == " ":
-                        position[1] = j - 1
-                        j = j - 1
+                    if mapIndex[i][j-1]==" ":
+                        position[1]=j-1
+                        j=j-1
                         sys.stdout.write("\033c")
-                        score = score + viewDistance
-                        draw(mapindex, position, viewDistance, score, enemy)
-                elif ch == "d" or ch == "D":
-                    if mapindex[i][j + 1] == "O":
+                        score=score+viewDistance
+                        draw(mapIndex,position,viewDistance,score)
+                elif ch == "d" or ch =="D":
+                    if mapIndex[i][j + 1] == "O":
                         sys.stdout.write("\033c")
                         l = l + 1
-                        score = score + viewDistance
+                        score=score+viewDistance
                         break
-                    if mapindex[i][j + 1] == " ":
+                    if mapIndex[i][j + 1] == " ":
                         position[1] = j + 1
                         j = j + 1
                         sys.stdout.write("\033c")
-                        score = score + viewDistance
-                        draw(mapindex, position, viewDistance, score, enemy)
-                elif ch == "x" or ch == "X":
+                        score=score+viewDistance
+                        draw(mapIndex, position,viewDistance,score)
+                elif ch=="x" or ch=="X":
                     sys.stdout.write("\033c")
-                    pause=True
-                    
-                    draw(mapindex, position, viewDistance, score, enemy)
+                    draw(mapIndex, position,viewDistance,score)
                     while True:
                         print("Would you like to quit? Y/N  ")
-                        ch = input()
-                        if ch == "n" or ch == "N":
+                        ch=readchar.readchar()
+                        if ch=="n" or ch=="N":
                             sys.stdout.write("\033c")
-                            draw(mapindex, position, viewDistance, score, enemy)
-                            
+                            draw(mapIndex, position,viewDistance,score)
                             break
-                        elif ch == "Y" or ch == "y":
+                        elif ch=="Y" or ch=="y":
                             sys.exit()
-                elif ch == "j" or ch == "J":
-                    if viewDistance > 1:
-                        viewDistance = viewDistance - 1
-                        sys.stdout.write("\033c")
-                        score = score + viewDistance
-                        draw(mapindex, position, viewDistance, score, enemy)
-                elif ch == "k"or ch == "K":
-                    if viewDistance <= 3:
-                        viewDistance = viewDistance + 1
+                elif ch=="j" or ch=="J":
+                    if viewDistance>1:
+                        viewDistance=viewDistance-1
                         sys.stdout.write("\033c")
                         score=score+viewDistance
-                        draw(mapindex,position,viewDistance,score,enemy)
+                        draw(mapIndex, position, viewDistance,score)
+                elif ch=="k"or ch=="K":
+                    if viewDistance<=3:
+                        viewDistance=viewDistance+1
+                        sys.stdout.write("\033c")
+                        score=score+viewDistance
+                        draw(mapIndex, position, viewDistance,score)
 
-                if move_right == True:
-                    if mapindex[enemy[0]][enemy[1] + 1] == "X":
-                        move_right = False
-                    if mapindex[enemy[0]][enemy[1] + 1] == " ":
-                        enemy[1] += 1
-                    else:
-                        score=score+50
-                    
-                if move_right == False:
-                    if mapindex[enemy[0]][enemy[1] - 1] == "X":
-                        move_right = True
-                    if mapindex[enemy[0]][enemy[1] - 1] == " ":
-                        enemy[1] -= 1
-                        if mapindex[enemy[0]][enemy[1] - 1] == "X":
-                            move_right=True
-                if enemy[0]==position[0] and enemy[1]==position[1]:
-                    score=score+50
-def enemy_move(string):
-    threading.Timer(1.0, enemy_move(string)).start()
-    print(string)
-               
-
-def enemy_movement(move_right,enemy,mapindex):
-    
-    if move_right==True:
-        if mapindex[i][j + 1] == " ":
-            enemy[1]+=1
-        if mapindex[i][j + 1] == "X":
-            move_right=False
-    if move_right==False:
-        if mapindex[i][j-1]==" ":
-            enemy[1]-=1
-        if mapindex[i][j-1]=="X":
-            move_right=True
-
-        
-
-def crash(score_crash):
-    score_crash=score_crash+50
-    
-    
-def draw(map,player,range,score,enemy):
-    
+def draw(map,player,range,score):
     print("w,a,s,d = movement \n"
           "j/k = view distance - / + \n"
           "x = exit")
@@ -200,18 +143,12 @@ def draw(map,player,range,score,enemy):
     print("")
     for rownum,row in enumerate(map):
         for colnum,col in enumerate(row):
-            
-            if rownum==player[0] and colnum==player[1]:
+           if rownum==player[0] and colnum==player[1]:
                  sys.stdout.write("s")
-                 crash(score)
-            
-            elif (rownum <= player[0] + range and rownum >= player[0] - range) and (colnum <= player[1] + range and colnum >= player[1] - range):
-                if rownum==enemy[0] and colnum==enemy[1]:
-                    sys.stdout.write("K")
-                else: 
-                    sys.stdout.write(col)
+           elif (rownum <= player[0] + range and rownum >= player[0] - range) and (colnum <= player[1] + range and colnum >= player[1] - range):
+               sys.stdout.write(col)
 
-            else:
+           else:
                sys.stdout.write(" ")
 
         sys.stdout.write("\n")
