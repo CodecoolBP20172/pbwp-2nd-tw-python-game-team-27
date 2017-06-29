@@ -2,9 +2,9 @@ import sys
 import readchar
 import pygame
 import random
+import time 
 
-
-
+moves=""
 #position = [i, j]
 global_score=0
 def load_map(filename):
@@ -40,24 +40,32 @@ def score_draw(scoree,viewDistanceee,map,pos): #score_draw(score,viewDistance,ma
     sys.stdout.write("\033c")
     draw(map,pos,viewDistanceee,scoree)
 
-def player_move(iChange,jChange,mapI,posIndex,pos,iPos,jPos,score,viewD,map_level):
-    if mapI[iPos+iChange][jPos+jChange]==" ":
-        iPos=iPos+iChange
-        jPos=jPos+jChange
-        score=score+viewD
-    if mapI[iPos+iChange][jPos+jChange]=="O":
-        map_level=map_level+1
-        score=score+viewD
-    return iPos,jPos,score,map_level
 
+def player_move(iChange, jChange, mapI, posIndex, pos, iPos, jPos, score, viewD, map_level):
+    if mapI[iPos + iChange][jPos + jChange] == " ":
+        iPos = iPos + iChange
+        jPos = jPos + jChange
+        score = score + viewD
+    if mapI[iPos + iChange][jPos + jChange] == "O":
+        map_level = map_level + 1
+        score = score + viewD
+    return iPos, jPos, score, map_level
 
-def landmine(map):
+def increase_score(score,range,multiplier=1):
+    score=score+(range*multiplier)
+
+def landmine(map,level):
     mines=[]
     for rownum,row in enumerate(map):
         for colnum,col in enumerate(row):
             if col==" ":
                 mines.append((rownum,colnum))
-    mine=random.choice(mines)
+    random.shuffle(mines)
+    if level<1:
+        number_of_mines=1
+    if level==1:
+        number_of_mines=3
+    mine=mines[0:number_of_mines]
     return mine
             
 def main():
@@ -65,21 +73,27 @@ def main():
     sys.stdout.write("\033c")
     score=0
     l=0
+    multiply=1
     viewDistance=1
     i=1
     j=1
+    cheat=False
     position=[i,j]
     while l<=len(lvl)-1:
         
         if l == len(lvl)-1:
             sys.stdout.write("\033c")
             print("Congratulations! You have escaped the maze. Press 'r' to go back to the menu or any other key to quit the game")
-            with open("hs.txt","a") as hs :
-                hs.write(str(score)+"\n")
-                high=high_score("hs.txt")
-                if int(score)<high[0]:
-                    print("")
-                    print("NEW HIGH SCORE")
+            if cheat==False:
+                with open("hs.txt","a") as hs :
+                    hs.write(str(score)+"\n")
+                    high=high_score("hs.txt")
+                    if int(score)<high[0]:
+                        print("")
+                        print("NEW HIGH SCORE")
+            else:
+                print("You have used cheats...shame on You...this won't be added to the highscores")
+
             while True:
                 re = readchar.readchar()
                 if re == "r":
@@ -87,6 +101,10 @@ def main():
                 else:
                     sys.exit()
         else:
+            moves=""
+            #mine_pos=[]
+            mapIndex = load_map(lvl[l])
+            mine_pos=landmine(mapIndex,l)
             i=1
             j=1
             next_map=l   
@@ -95,27 +113,28 @@ def main():
                 next_map=l
                 mapIndex = load_map(lvl[l])
                 draw(mapIndex, position, viewDistance, score)
-                ch = readchar.readchar().lower()
+                print(mine_pos)
+                ch = readchar.readchar().lower() 
+                moves+=ch              
                 
-                
-                if ch == "s" or ch == "S":
+                if ch == "s" :
                     print("S")
                     i,j,score,l=player_move(1,0,mapIndex,0,i+1,i,j,score,viewDistance,l)
                     draw(mapIndex, position, viewDistance, score)
 
-                elif ch == "w" or ch == "W":
+                elif ch == "w":
                     i,j,score,l=player_move(-1,0,mapIndex,0,i-1,i,j,score,viewDistance,l)
                     draw(mapIndex, position, viewDistance, score)                  
 
-                elif ch == "a" or ch == "A":
+                elif ch == "a" :
                     i,j,score,l=player_move(0,-1,mapIndex,1,j-1,i,j,score,viewDistance,l) 
                     draw(mapIndex, position, viewDistance, score)
 
-                elif ch == "d" or ch == "D":
+                elif ch == "d" :
                     i,j,score,l=player_move(0,1,mapIndex,1,j+1,i,j,score,viewDistance,l)
                     draw(mapIndex, position, viewDistance, score)
 
-                elif ch == "x" or ch == "X":
+                elif ch == "x" :
                     draw(mapIndex, position, viewDistance, score)            
                     while True:
                         print("Would you like to quit? Y/N  ")
@@ -128,19 +147,40 @@ def main():
 
                 elif ch == "j" or ch == "J":
                     if viewDistance > 1:
-                        viewDistance = viewDistance - 1
-                        score=score+viewDistance
+                        if viewDistance>5:
+                            pass
+                        else:
+                            viewDistance = viewDistance - 1
+                            score=score+viewDistance
 
                 elif ch == "k"or ch == "K":
                     if viewDistance <= 3:
                         viewDistance = viewDistance + 1
                         score=score+viewDistance
+
                 position=[i,j]
                 draw(mapIndex, position, viewDistance, score)
-                print(position)
+                if tuple(position) in mine_pos:
+                    print("MINES FOUNDDDD")
+                    play_sound("allahu.wav")
+                    score=score+200  
+                    time.sleep(2) 
+                if cheat_check(moves) ==True:
+                    viewDistance=10
+                    score=0
+                    cheat=True
+                    
                 
-                       
-
+def cheat_check(latest_moves):
+    cheats=["alma","codecool","lol"]
+    for cheat in cheats:
+        try:
+            if latest_moves[-(len(cheat)):]==cheat:
+                print("lol megy")
+                time.sleep(1)
+                return True
+        except IndexError:
+            continue
 
 def draw(map,player,range,score):
     sys.stdout.write("\033c")
@@ -155,10 +195,8 @@ def draw(map,player,range,score):
                  sys.stdout.write("s")
            elif (rownum <= player[0] + range and rownum >= player[0] - range) and (colnum <= player[1] + range and colnum >= player[1] - range):
                sys.stdout.write(col)
-
            else:
                sys.stdout.write(" ")
-
         sys.stdout.write("\n")
         
 
