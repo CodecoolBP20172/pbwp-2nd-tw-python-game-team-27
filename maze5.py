@@ -2,7 +2,7 @@ import sys
 import readchar
 import pygame
 import random
-l=0
+
 
 
 #position = [i, j]
@@ -40,16 +40,16 @@ def score_draw(scoree,viewDistanceee,map,pos): #score_draw(score,viewDistance,ma
     sys.stdout.write("\033c")
     draw(map,pos,viewDistanceee,scoree)
 
-def player_move(iChange,jChange,mapI,posIndex,pos,iPos,jPos,score,range):
-    player_position=[iPos,jPos]
+def player_move(iChange,jChange,mapI,posIndex,pos,iPos,jPos,score,viewD,map_level):
     if mapI[iPos+iChange][jPos+jChange]==" ":
         iPos=iPos+iChange
         jPos=jPos+jChange
-        score=score+range
-    return iPos,jPos,score
+        score=score+viewD
+    if mapI[iPos+iChange][jPos+jChange]=="O":
+        map_level=map_level+1
+        score=score+viewD
+    return iPos,jPos,score,map_level
 
-def increase_score(score,viewDistance):
-    score=score+viewDistance
 
 def landmine(map):
     mines=[]
@@ -59,128 +59,12 @@ def landmine(map):
                 mines.append((rownum,colnum))
     mine=random.choice(mines)
     return mine
-
-"""def main():
-    pause=False
-    move_right=True
-    lvl=level("levels.txt")
-    #print(high_score("hs.txt"))
-    sys.stdout.write("\033c")
-    l=0
-    i=1
-    j=1
-    viewDistance=1
-    score=global_score
-    position=[i,j]
-    
-    
-    while l<=len(lvl)-1:
-        
-        i = 1
-        j = 1
-        if l == len(lvl)-1:
-            sys.stdout.write("\033c")
-            print("Congratulations! You have escaped the maze. Press 'r' to go back to the menu or any other key to quit the game")
-            with open("hs.txt","a") as hs :
-                hs.write(str(score)+"\n")
-                high=high_score("hs.txt")
-                if int(score)<high[0]:
-                    print("")
-                    print("NEW HiGH SCORE")
-            while True:
-                re = readchar.readchar()
-                if re == "r":
-                    menu()
-                else:
-                    sys.exit()
-        else:
-            mapindex = load_map(lvl[l])
-            mine_pos=landmine(mapindex)
-            position = [i, j]
-            draw(mapindex, position, viewDistance, score)
-            while True:
-                ch = readchar.readchar()
-                if ch == "s" or ch == "S":
-                    if mapindex[i + 1][j] == "O":
-                        sys.stdout.write("\033c")
-                        l = l + 1
-                        score = score + viewDistance
-                        break
-                    if mapindex[i + 1][j] == " ":
-                        position[0] = i + 1
-                        i = i + 1
-                        score = score + viewDistance
-                        sys.stdout.write("\033c")
-                        draw(mapindex, position, viewDistance, score)
-                elif ch == "w" or ch == "W":
-                    if mapindex[i - 1][j] == "O":
-                        sys.stdout.write("\033c")
-                        l = l + 1
-                        score = score + viewDistance
-                        break
-                    if mapindex[i - 1][j] == " ":
-                        position[0] = i - 1
-                        i = i - 1
-                        sys.stdout.write("\033c")
-                        score = score + viewDistance
-                        draw(mapindex, position, viewDistance, score)
-                elif ch == "a" or ch == "A":
-                    if mapindex[i][j - 1] == "O":
-                        sys.stdout.write("\033c")
-                        l = l + 1
-                        score = score + viewDistance
-                        break
-                    if mapindex[i][j - 1] == " ":
-                        position[1] = j - 1
-                        j = j - 1
-                        sys.stdout.write("\033c")
-                        score = score + viewDistance
-                        draw(mapindex, position, viewDistance, score)
-                elif ch == "d" or ch == "D":
-                    if mapindex[i][j + 1] == "O":
-                        sys.stdout.write("\033c")
-                        l = l + 1
-                        score = score + viewDistance
-                        break
-                    if mapindex[i][j + 1] == " ":
-                        position[1] = j + 1
-                        j = j + 1
-                        sys.stdout.write("\033c")
-                        score = score + viewDistance
-                        draw(mapindex, position, viewDistance, score)
-                elif ch == "x" or ch == "X":
-                    sys.stdout.write("\033c")        
-                    draw(mapindex, position, viewDistance, score)
-                    while True:
-                        print("Would you like to quit? Y/N  ")
-                        ch = input()
-                        if ch == "n" or ch == "N":
-                            sys.stdout.write("\033c")
-                            draw(mapindex, position, viewDistance, score)
-                            break
-                        elif ch == "Y" or ch == "y":
-                            sys.exit()
-                elif ch == "j" or ch == "J":
-                    if viewDistance > 1:
-                        viewDistance = viewDistance - 1
-                        sys.stdout.write("\033c")
-                        score = score + viewDistance
-                        draw(mapindex, position, viewDistance, score)
-                elif ch == "k"or ch == "K":
-                    if viewDistance <= 3:
-                        viewDistance = viewDistance + 1
-                        sys.stdout.write("\033c")
-                        score=score+viewDistance
-                        draw(mapindex,position,viewDistance,score)
-                if position[0]==mine_pos[0] and position[1]==mine_pos[1]:
-                    print("MINES FOUNDDDD")
-                    score=score+200"""
             
 def main():
     lvl=level("levels.txt")
-    #print(high_score("hs.txt"))
     sys.stdout.write("\033c")
     score=0
+    l=0
     viewDistance=1
     i=1
     j=1
@@ -203,64 +87,59 @@ def main():
                 else:
                     sys.exit()
         else:
-            mapIndex = load_map(lvl[l])        
-            draw(mapIndex, position, viewDistance, score)
-            while True:
-                # position=[i,j]
+            i=1
+            j=1
+            next_map=l   
+            position=[i,j]            
+            while next_map==l:
+                next_map=l
+                mapIndex = load_map(lvl[l])
+                draw(mapIndex, position, viewDistance, score)
                 ch = readchar.readchar().lower()
+                
+                
                 if ch == "s" or ch == "S":
                     print("S")
-                    #finish(mapIndex, i, j, l, score, viewDistance)
-                    i,j,score=player_move(1,0,mapIndex,0,i+1,i,j,score,viewDistance)
-                    # position=[i,j]
+                    i,j,score,l=player_move(1,0,mapIndex,0,i+1,i,j,score,viewDistance,l)
                     draw(mapIndex, position, viewDistance, score)
-                    #i=list(player_move(1,0,mapIndex,0,i+1,i,j)[2])
-                                                   
-                        
+
                 elif ch == "w" or ch == "W":
-                    #finish(mapIndex, i, j, l, score, viewDistance)
-                    i,j,score=player_move(-1,0,mapIndex,0,i-1,i,j,score,viewDistance)
-                    # position=[i,j]
+                    i,j,score,l=player_move(-1,0,mapIndex,0,i-1,i,j,score,viewDistance,l)
                     draw(mapIndex, position, viewDistance, score)                  
 
                 elif ch == "a" or ch == "A":
-                   # finish(mapIndex, i, j, l, score, viewDistance)
-                    i,j,score=player_move(0,-1,mapIndex,1,j-1,i,j,score,viewDistance) 
-                    # position=[i,j]              
+                    i,j,score,l=player_move(0,-1,mapIndex,1,j-1,i,j,score,viewDistance,l) 
                     draw(mapIndex, position, viewDistance, score)
+
                 elif ch == "d" or ch == "D":
-                    #finish(mapIndex, i, j, l, score, viewDistance)
-                    i,j,score=player_move(0,1,mapIndex,1,j+1,i,j,score,viewDistance)
-                    # position=[i,j]  
+                    i,j,score,l=player_move(0,1,mapIndex,1,j+1,i,j,score,viewDistance,l)
                     draw(mapIndex, position, viewDistance, score)
+
                 elif ch == "x" or ch == "X":
-                    
-                    draw(mapIndex, position, viewDistance, score)
+                    draw(mapIndex, position, viewDistance, score)            
                     while True:
                         print("Would you like to quit? Y/N  ")
                         ch = readchar.readchar()
                         if ch == "n" or ch == "N":
-                            
                             draw(mapIndex, position, viewDistance, score)
                             break
                         elif ch == "Y" or ch == "y":
                             sys.exit()
+
                 elif ch == "j" or ch == "J":
                     if viewDistance > 1:
                         viewDistance = viewDistance - 1
                         score=score+viewDistance
+
                 elif ch == "k"or ch == "K":
                     if viewDistance <= 3:
                         viewDistance = viewDistance + 1
                         score=score+viewDistance
-
-               # score_draw(score, viewDistance, mapIndex, position)
-                
                 position=[i,j]
+                draw(mapIndex, position, viewDistance, score)
                 print(position)
-                draw(mapIndex, position, viewDistance, score) # - merge sys.stdout here!!
-                print(ch)
-                print(position)
+                
+                       
 
 
 def draw(map,player,range,score):
