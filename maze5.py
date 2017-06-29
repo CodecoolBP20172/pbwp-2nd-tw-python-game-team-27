@@ -201,7 +201,7 @@ def draw(map,player,range,score):
         
 
 def menu():
-    play_sound('sms-alert-2-daniel_simon.wav')
+    #play_sound('sms-alert-2-daniel_simon.wav')
     sys.stdout.write("\033c")
     print("MENU")
     print("1. New Game")
@@ -212,10 +212,12 @@ def menu():
         ch=readchar.readchar()
         if ch=="1":
             main()
+            play_sound("meow.wav")
             break
         elif ch=="2":
             sys.stdout.write("\033c")
             hs=high_score("hs.txt")
+            play_sound("meow.wav")
             i=len(hs)
             print("High score ranking: ")
             print("First : "+str(hs[0]))
@@ -227,9 +229,12 @@ def menu():
                 if back =="x" or back=="X":
                     menu()
         elif ch=="4":
+            play_sound("meow.wav")
+            play_sound("meow.wav")
             sys.exit()
         elif ch=="3":
             sys.stdout.write("\033c")
+            play_sound("meow.wav")
             print("Reach 'O' to escape the maze. \n"
                   "You can inscrease or decrease your view distance with 'j' and 'k'.\n"
                   "Score is increased at every step by the value of your view distance.\n"
@@ -240,6 +245,7 @@ def menu():
                 back = readchar.readchar()
                 if back == "x" or back=="X":
                     menu()
+                    play_sound("meow.wav")
 
 def play_sound(filename):
     pygame.init()
