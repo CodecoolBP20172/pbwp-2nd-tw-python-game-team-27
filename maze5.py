@@ -79,6 +79,7 @@ def main():
     j=1
     cheat=False
     position=[i,j]
+    play_sound("mario.wav")
     while l<=len(lvl)-1:
         
         if l == len(lvl)-1:
@@ -162,7 +163,9 @@ def main():
                 draw(mapIndex, position, viewDistance, score)
                 if tuple(position) in mine_pos:
                     print("MINES FOUNDDDD")
+                    pause_sound("mario.wav")
                     play_sound("allahu.wav")
+                    unpause_sound("mario.wav")
                     score=score+200  
                     time.sleep(2) 
                 if cheat_check(moves) ==True:
@@ -229,6 +232,7 @@ def menu():
                 if back =="x" or back=="X":
                     menu()
         elif ch=="4":
+
             play_sound("meow.wav")
             play_sound("meow.wav")
             sys.exit()
@@ -251,5 +255,12 @@ def play_sound(filename):
     pygame.init()
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play()
+def pause_sound(filename):
+    pygame.init()
+    pygame.mixer.music.pause()
+
+def unpause_sound(filename):
+    pygame.init()
+    pygame.mixer.music.unpause()
 
 menu()
