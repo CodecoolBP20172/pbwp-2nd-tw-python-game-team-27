@@ -1,3 +1,4 @@
 map.txt
 map2.txt
+map3.txt
 finished
