@@ -244,6 +244,7 @@ def menu():
                   "The lower is your score,the higher you can get in the ladder.\n"
                   "Move the character using 'w' 'a' 's' 'd' or press 'x' to exit.\n")
             print("\n Update :\n-Player's now encounter landmines in the labyrinth(at random locations in each game/map). Stepping on a landmine increases our score by 50. \n"
+                  "-Added a new well-designed map"
                   "-Added amazing sound effects.. \n"
                   "-Players can now save/load game "
                   "-Cheats are now avaible. Use them on your own risk. \n"
